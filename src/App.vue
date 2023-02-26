@@ -1,4 +1,4 @@
-<script setup lang="ts">
+3<script setup lang="ts">
 </script>
 
 <template>
@@ -6,4 +6,5 @@
 </template>
 
 <style scoped>
+
 </style>

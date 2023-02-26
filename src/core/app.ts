@@ -1,10 +1,11 @@
 // three.js应用类
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import Stats from 'three/examples/jsm/libs/stats.module'
+import { disposeObject } from './common'
 
-export default class ThreeJsApp {
-  canvas!: HTMLCanvasElement
-  canvasWrapper!: HTMLElement
+export default class App {
+  root!: HTMLElement
   renderer!: THREE.WebGLRenderer
   scene!: THREE.Scene
   camera!: THREE.PerspectiveCamera
@@ -13,40 +14,46 @@ export default class ThreeJsApp {
   pointer!: THREE.Vector2
   animationMixer!: THREE.AnimationMixer
   resizeObserver!: ResizeObserver
-  frameRequestCallback!: Function
+  frameRequestCallbacks: Function[] = []
   mouseX!: number
   mouseY!: number
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.initRenderer(canvas)
+  stats!: Stats
+
+  constructor(root: HTMLElement) {
+    this.root = root
+    this.initRenderer()
+    this.initStats()
     this.initScene()
     this.initRaycaster()
     this.initCamera()
     this.initOrbitControls()
+    this.initAnimationLoop()
     this.initResizeCallback()
     this.initMouseMoveCallback()
   }
 
   /**
    * 初始化渲染器
-   * @param {HTMLCanvasElement} canvas canvas容器
    */
-  initRenderer(canvas: HTMLCanvasElement) {
-    this.canvas = canvas
+  initRenderer() {
     const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true
-      // logarithmicDepthBuffer: true
+      antialias: true,
+      logarithmicDepthBuffer: true
     })
     this.renderer = renderer
-    renderer.outputEncoding = THREE.sRGBEncoding
-    renderer.setClearColor(0x999999)
+    this.root.appendChild(renderer.domElement)
+    // renderer.outputEncoding = THREE.sRGBEncoding
+    renderer.setClearColor(0x000000)
     renderer.setPixelRatio(window.devicePixelRatio)
-    const canvasWrapper = canvas.parentElement! // canvas容器的父元素
-    this.canvasWrapper = canvasWrapper
-    renderer.setSize(canvasWrapper.offsetWidth, canvasWrapper.offsetHeight)
-    // renderer.shadowMap.enabled = true
-    // renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+    renderer.setSize(this.root.offsetWidth, this.root.offsetHeight)
+  }
+
+  initStats() {
+    this.stats = Stats()
+    this.stats.dom.style.position = 'absolute'
+    this.root.appendChild(this.stats.dom)
   }
 
   /**
@@ -54,6 +61,7 @@ export default class ThreeJsApp {
    */
   initScene() {
     this.scene = new THREE.Scene()
+    this.scene.add(new THREE.AxesHelper(1000))
   }
 
   /**
@@ -69,25 +77,70 @@ export default class ThreeJsApp {
    */
   initCamera() {
     this.camera = new THREE.PerspectiveCamera(
-      30,
-      this.canvasWrapper.offsetWidth / this.canvasWrapper.offsetHeight,
+      75,
+      this.root.offsetWidth / this.root.offsetHeight,
       0.1,
-      1000
+      1000000
     )
+    this.camera.up.set(0, 0, 1)
   }
 
   /**
    * 初始化轨道控制器
    */
   initOrbitControls() {
-    this.controls = new OrbitControls(this.camera, this.canvas)
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls.enableZoom = true
+    this.controls.zoomSpeed = 2
+    this.controls.mouseButtons = {
+      // 左键
+      LEFT: THREE.MOUSE.PAN,
+      // 滚轮滑动
+      MIDDLE: THREE.MOUSE.PAN,
+      // 右键
+      RIGHT: THREE.MOUSE.ROTATE
+    }
   }
 
   /**
-   * 设置动画循环中每帧要执行的回调
+   * 初始化动画循环
    */
-  setFrameRequestCallback(callback: Function) {
-    this.frameRequestCallback = callback
+  initAnimationLoop() {
+    // 动画混合器
+    this.animationMixer = new THREE.AnimationMixer(this.scene)
+    // 时钟
+    const clock = new THREE.Clock()
+
+    this.renderer.setAnimationLoop(() => {
+      this.controls.update() // 更新轨道控制器状态
+      this.stats.update() // 更新性能监视器状态
+      this.raycaster.setFromCamera(this.pointer, this.camera) // 更新光线投射状态
+      this.animationMixer.update(clock.getDelta()) // 更新动画混合器状态
+
+      this.callFrameRequestCallbacks(clock.getDelta())
+
+      this.renderer.render(this.scene, this.camera)
+    })
+  }
+
+  addFrameRequestCallback(callback: Function) {
+    this.frameRequestCallbacks.push(callback)
+  }
+
+  removeFrameRequestCallback(callback: Function) {
+    const index = this.frameRequestCallbacks.indexOf(callback)
+    if (index > -1) {
+      this.frameRequestCallbacks.splice(index, 1)
+    }
+  }
+  clearFrameRequestCallback() {
+    this.frameRequestCallbacks = []
+  }
+
+  callFrameRequestCallbacks(delta: number) {
+    this.frameRequestCallbacks.forEach((callback) => {
+      callback(delta)
+    })
   }
 
   /**
@@ -95,11 +148,11 @@ export default class ThreeJsApp {
    */
   initResizeCallback() {
     this.resizeObserver = new ResizeObserver(() => {
-      this.renderer.setSize(this.canvasWrapper.offsetWidth, this.canvasWrapper.offsetHeight)
-      this.camera.aspect = this.canvasWrapper.offsetWidth / this.canvasWrapper.offsetHeight
+      this.renderer.setSize(this.root.offsetWidth, this.root.offsetHeight)
+      this.camera.aspect = this.root.offsetWidth / this.root.offsetHeight
       this.camera.updateProjectionMatrix()
     })
-    this.resizeObserver.observe(this.canvasWrapper)
+    this.resizeObserver.observe(this.root)
   }
 
   /**
@@ -115,39 +168,28 @@ export default class ThreeJsApp {
       this.mouseX = event.offsetX
       this.mouseY = event.offsetY
       this.pointer.set(
-        (event.offsetX / this.canvasWrapper.offsetWidth) * 2 - 1,
-        -(event.offsetY / this.canvasWrapper.offsetHeight) * 2 + 1
+        (event.offsetX / this.root.offsetWidth) * 2 - 1,
+        -(event.offsetY / this.root.offsetHeight) * 2 + 1
       )
     }
-    this.canvas.addEventListener('mousemove', this.onMouseMove)
+    this.renderer.domElement.addEventListener('mousemove', this.onMouseMove)
   }
   onMouseMove!: (event: MouseEvent) => void
 
   /**
    * 销毁场景，释放内存
    */
-  destroy() {
-    const { scene, renderer, controls, resizeObserver, canvas } = this
+  dispose() {
+    const { scene, renderer, controls, resizeObserver } = this
     controls.dispose()
     resizeObserver.disconnect()
-    canvas.removeEventListener('mousemove', this.onMouseMove)
-    scene.traverse((child: any) => {
-      if (child.material) {
-        child.material.dispose()
-        Object.keys(child.material).forEach((key) => {
-          if (child.material[key] && child.material[key].isTexture) {
-            child.material[key].dispose()
-          }
-        })
-      }
-      if (child.geometry) {
-        child.geometry.dispose()
-      }
-    })
+    this.renderer.domElement.removeEventListener('mousemove', this.onMouseMove)
+    disposeObject(scene)
     scene.clear()
     renderer.setAnimationLoop(null)
     renderer.dispose()
     renderer.forceContextLoss()
+    this.clearFrameRequestCallback()
   }
 
   /**
@@ -155,8 +197,8 @@ export default class ThreeJsApp {
    */
   getContainer2DCoordFromVec3(vec3: THREE.Vector3) {
     const stdVec3 = vec3.project(this.camera)
-    const width = this.canvasWrapper.offsetWidth * 0.5
-    const height = this.canvasWrapper.offsetHeight * 0.5
+    const width = this.root.offsetWidth * 0.5
+    const height = this.root.offsetHeight * 0.5
     const x = (1 + stdVec3.x) * width
     const y = (1 - stdVec3.y) * height
     return { x, y }
