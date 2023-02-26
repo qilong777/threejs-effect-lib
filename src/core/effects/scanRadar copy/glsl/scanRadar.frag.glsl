@@ -1,3 +1,6 @@
+/**
+* 参考：https://zhuanlan.zhihu.com/p/346877633
+*/
 const float PI = 3.14159265359;
 const float TWO_PI = 6.28318530718;
 const int N = 3;				// triangle polygons please
@@ -37,7 +40,7 @@ void main(  )
        vec2 uv = vUv;
 	vec2 pos = uv.xy - vec2(0.5, 0.5) ; // center what being drawn
    
-   	vec4 grndSpd = vec4(0.0, time/5.0, 0.0, 0.0);
+  vec4 grndSpd = vec4(0.0, time/5.0, 0.0, 0.0);
 	// vec4 mapcol = texture2D(map,uv) * vec4 (0.0, 0.85, 0.0, 1.0);
   
 	vec3 color = vec3(0.0, 0.0, 0.0);
@@ -113,17 +116,19 @@ void main(  )
 	float st2 = s * (drawPolygon(st_trace4, N, r_red, pos));  
     
 // Lets add all the bits together and send them to screen
+	// float s_grn = max(s * mapcol.y, s_blade);
 	float s_grn = s_blade;
 	s_grn = max(s_grn, (s0 +  sr + sm));
 	s_grn += s1 / 1.5  + smb + smr;
 
-	float s_red = st1*2.0 + st2*2.0 + smr;
+	// float s_red = st1*2.0 + st2*2.0 + smr;
 		
-	float s_blue = max(s_trace1 + s_trace2, s_blade) + smb;
+	// float s_blue = max(s_trace1 + s_trace2, s_blade) + smb;
 
-	if (s_trace1 > 0.0 || s_trace2 > 0.0) { s_blue = max(s, s_blue); s_grn = max(s_grn, s_blue); }
+	// if (s_trace1 > 0.0 || s_trace2 > 0.0) { s_blue = max(s, s_blue); s_grn = max(s_grn, s_blue); }
 
-	color += vec3(s_red , s_grn, s_blue);   
+	// color += vec3(s_red , s_grn, s_blue);   
+	color += vec3(0 , s_grn, 0);   
     
     // vec4 texColor = mapcol * s;
     

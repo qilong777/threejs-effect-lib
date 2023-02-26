@@ -2,7 +2,7 @@ import type App from '../App'
 
 export abstract class BaseEffectShow {
   app: App
-  name: string = ''
+  static effectName: string = ''
   constructor(app: App) {
     this.app = app
   }
@@ -16,5 +16,9 @@ export abstract class BaseEffectShow {
 
   dispose() {
     console.log('BaseEffectShow dispose')
+  }
+
+  getEffectName() {
+    return BaseEffectShow.effectName
   }
 }

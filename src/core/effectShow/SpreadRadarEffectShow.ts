@@ -1,13 +1,16 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
 import { disposeObject } from '../common'
-import { getRadarShaderMaterial } from '../effects/radar'
-export class RadarEffectShow extends BaseEffectShow {
-  name = 'radar'
-  circle = new THREE.Mesh(new THREE.CircleGeometry(100, 100), getRadarShaderMaterial())
+import { getSpreadRadarShaderMaterial } from '../effects/spreadRadar'
+export class SpreadRadarEffectShow extends BaseEffectShow {
+  static effectName = 'spreadRadar'
+  circle = new THREE.Mesh(new THREE.CircleGeometry(100, 100), getSpreadRadarShaderMaterial())
 
   init() {
     this.app.scene.add(this.circle)
+    console.log(this.circle.geometry.attributes)
+
+    this.circle.position.set(100, 100, 0)
     this.update = this.update.bind(this)
     this.app.addFrameRequestCallback(this.update)
   }
@@ -20,5 +23,9 @@ export class RadarEffectShow extends BaseEffectShow {
     disposeObject(this.circle)
     this.app.scene.remove(this.circle)
     this.app.removeFrameRequestCallback(this.update)
+  }
+
+  getEffectName() {
+    return SpreadRadarEffectShow.effectName
   }
 }

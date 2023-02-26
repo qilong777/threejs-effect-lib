@@ -1,6 +1,6 @@
 import type App from '@/core/App'
 import type { BaseEffectShow } from '@/core/effectShow/BaseEffectShow'
-import { RadarEffectShow } from '@/core/effectShow/RadarEffectShow'
+import * as EffectShow from '@/core/effectShow'
 
 export class Stage {
   private effectShowMap: Record<string, BaseEffectShow> = {} // 特效显示映射表
@@ -13,13 +13,14 @@ export class Stage {
   }
 
   private init() {
-    this.effectShowMap = {
-      radar: new RadarEffectShow(this.app)
+    for (const key in EffectShow) {
+      const Cons = (EffectShow as any)[key]
+      this.effectShowMap[Cons.effectName] = new Cons(this.app)
     }
   }
 
   showEffect(effectName: string) {
-    if (effectName === this.currEffectShow?.name) {
+    if (effectName === this.currEffectShow?.getEffectName()) {
       return
     }
 

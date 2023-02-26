@@ -1,12 +1,24 @@
 <script setup lang="ts">
-import { onMounted, ref,onBeforeUnmount,reactive } from 'vue'
+import { onMounted, ref,onBeforeUnmount } from 'vue'
 import App from '../../core/App'
 import { Stage } from './Stage'
+import { SpreadRadarEffectShow, ScanRadarEffectShow } from '@/core/effectShow'
 
 let app!: App
 
 const threeContainer = ref<HTMLCanvasElement | null>(null)
 let stage!:Stage
+
+const menuList  = [
+  {
+    name: '扩散雷达',
+    type: SpreadRadarEffectShow.effectName
+  },
+  {
+    name: '扫描雷达',
+    type: ScanRadarEffectShow.effectName
+  }
+]
 
 onMounted(() => {
   if (threeContainer.value) {
@@ -14,10 +26,8 @@ onMounted(() => {
     console.log(app);
     
     app.camera.position.set(0, 0, 1000)
-
     stage = new Stage(app)
-    stage.showEffect('radar')
-
+    stage.showEffect(menuList[0].type)
   }
 })
 
@@ -25,16 +35,7 @@ onBeforeUnmount(() => {
   app.dispose()
 })
 
-const menuList  = [
-  {
-    name: '雷达',
-    type: 'radar'
-  },
-  {
-    name: '雷达1',
-    type: 'radar1'
-  }
-]
+
 
 const handleSelect = (index: string) => {
   stage.showEffect(menuList[Number(index)].type)
@@ -46,7 +47,7 @@ const handleSelect = (index: string) => {
   <main>
     <div class="menu">
       <el-menu
-        default-active="1"
+        default-active="0"
         class="el-menu-vertical-demo"
         @select="handleSelect"
       >

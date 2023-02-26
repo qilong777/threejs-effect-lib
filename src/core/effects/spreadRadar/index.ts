@@ -1,8 +1,8 @@
-import vert from './glsl/radar.vert.glsl?raw'
-import frag from './glsl/radar.frag.glsl?raw'
+import vert from './glsl/spreadRadar.vert.glsl?raw'
+import frag from './glsl/spreadRadar.frag.glsl?raw'
 import * as THREE from 'three'
 
-export function getRadarShaderMaterial() {
+export function getSpreadRadarShaderMaterial() {
   return new THREE.ShaderMaterial({
     uniforms: {
       time: { value: 0 }
