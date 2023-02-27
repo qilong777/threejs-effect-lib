@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { disposeObject } from '../common'
 import { getScanRadarShaderMaterial } from '../effects/scanRadar'
 export class ScanRadarEffectShow extends BaseEffectShow {
-  static effectName = 'scanRadar'
+  static effectName = '扫描雷达'
   circle = new THREE.Mesh(new THREE.CircleGeometry(100, 100), getScanRadarShaderMaterial())
 
   init() {
@@ -13,17 +13,13 @@ export class ScanRadarEffectShow extends BaseEffectShow {
     this.app.addFrameRequestCallback(this.update)
   }
 
-  update() {
-    this.circle.material.uniforms.time.value += 0.01
+  update(delta: number) {
+    this.circle.material.uniforms.time.value += delta
   }
 
   dispose() {
     disposeObject(this.circle)
     this.app.scene.remove(this.circle)
     this.app.removeFrameRequestCallback(this.update)
-  }
-
-  getEffectName() {
-    return ScanRadarEffectShow.effectName
   }
 }

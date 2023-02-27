@@ -3,20 +3,19 @@ import * as THREE from 'three'
 import { disposeObject } from '../common'
 import { getSpreadRadarShaderMaterial } from '../effects/spreadRadar'
 export class SpreadRadarEffectShow extends BaseEffectShow {
-  static effectName = 'spreadRadar'
+  static effectName = '扩散雷达'
   circle = new THREE.Mesh(new THREE.CircleGeometry(100, 100), getSpreadRadarShaderMaterial())
 
   init() {
     this.app.scene.add(this.circle)
-    console.log(this.circle.geometry.attributes)
 
     this.circle.position.set(100, 100, 0)
     this.update = this.update.bind(this)
     this.app.addFrameRequestCallback(this.update)
   }
 
-  update() {
-    this.circle.material.uniforms.time.value += 0.01
+  update(delta: number) {
+    this.circle.material.uniforms.time.value += delta
   }
 
   dispose() {
@@ -25,7 +24,5 @@ export class SpreadRadarEffectShow extends BaseEffectShow {
     this.app.removeFrameRequestCallback(this.update)
   }
 
-  getEffectName() {
-    return SpreadRadarEffectShow.effectName
-  }
+
 }

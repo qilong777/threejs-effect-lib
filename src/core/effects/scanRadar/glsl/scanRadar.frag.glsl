@@ -1,8 +1,11 @@
 // 参考：https://www.shadertoy.com/view/XdsXRf
 #define PI 3.1415926535897932384626433832795
 uniform float time;
+uniform vec4 circleColor;
+uniform vec4 lineColor;
 varying vec2 vUv;
-
+// 每秒转几度
+const float speed = 60.0 / 180.0 * PI;
 
 float LineToPointDistance2D( vec2 a, vec2 b, vec2 p)
 {
@@ -73,29 +76,43 @@ float angleVec(vec2 a_, vec2 b_)
 
 void main()
 {
+
+  // 0-1
   vec2 pos = vUv;
+  // 中心点
 	vec2 center = vec2(0.5,0.5);
 	float minRes = min(center.x,center.y);
-	float radius =minRes-minRes*0.1;
-	float circleWitdh = radius*0.02;
-	float lineWitdh = circleWitdh*0.8;
+	float radius = 0.5;
+  // 外圆的宽度
+	float circleWitdh = radius * 0.1;
+  // 扫描线的厚度
+	float lineWitdh = radius * 0.01;
 	float angleStela = 180.0;	
 	vec2 lineEnd =  vec2(center.x,center.y+radius);
 
-	float blue =0.0;
 	float green =0.0;
 	
-	float distanceToCenter = distance(center,pos);	
-	float disPointToCircle=abs(distanceToCenter-radius);
+  // 获取当前像素点到圆心的距离
+	float distanceToCenter = distance(center, pos);	
+
+  // 获取点到圆边界的距离
+	float disPointToCircle= abs(distanceToCenter - radius);
 							
-	//Draw Circle
-	if (disPointToCircle<circleWitdh)
+
+  vec4 defaultCircleColor = circleColor;
+  vec4 defaultLineColor = lineColor;
+  vec4 defaultLineTailColor = lineColor;
+
+	// 绘制渐变圆
+	if (disPointToCircle < circleWitdh)
 	{
-		green= 1.0-(disPointToCircle/circleWitdh);
-	}
+		defaultCircleColor *= 1.0 - (disPointToCircle/circleWitdh);
+	}else{
+    defaultCircleColor = vec4(0.0);
+  }
 	
-	//Rotate Line
-	float angle = (-time*1.2);
+	// 旋转扫描线
+	float angle = -time* speed;
 	lineEnd = rotatePoint(center,angle,lineEnd);
 	
 	//Draw Line	
@@ -103,9 +120,12 @@ void main()
 	if (distPointToLine<lineWitdh)
 	{ 
 		float val = 1.0-distPointToLine/lineWitdh;
-		if (val>green)
-			green=val;
-	}
+    defaultLineColor *= val;
+		// if (val>green)
+		// 	green=val;
+	}else{
+    defaultLineColor = vec4(0.0);
+  }
 	
 	
 	//Draw Stela
@@ -114,33 +134,42 @@ void main()
 	{
 		float factorAngle = 1.0-angleStelaToApply/angleStela;
 		
-		float finalFactorAngle = (factorAngle*0.5)-0.15;
-		
+		float finalFactorAngle = (factorAngle*0.5)-0.05;
+		defaultLineTailColor *= finalFactorAngle;
+
+    // defaultLineTailColor的rgba如果小于0则归0，大于1则归1
+    defaultLineTailColor = clamp(defaultLineTailColor, 0.0, 1.0);
+
+    
 		
 		if (finalFactorAngle>green)
 			green=finalFactorAngle;
 		
 
-			
-		//DrawBlips
-		vec2 blips[1];
-		float angles[1];
-		// getBlips(radius,blips);
+		
+		// //DrawBlips
+		// vec2 blips[1];
+		// float angles[1];
+		// // getBlips(radius,blips);
 
 		
-		float distToBlip = distance(pos,blips[0]);//blips[0]);
+		// float distToBlip = distance(pos,blips[0]);//blips[0]);
 			
-		if (distToBlip<15.0)
-		{
-			float blipFactor = 1.0-distToBlip/15.0;
-			float toSubtract = 1.0-factorAngle;
-			float final = blipFactor-toSubtract;
-			if (final>green)
-			green = final;
-		}			
-	}
+		// if (distToBlip<15.0)
+		// {
+		// 	float blipFactor = 1.0-distToBlip/15.0;
+		// 	float toSubtract = 1.0-factorAngle;
+		// 	float final = blipFactor-toSubtract;
+    //   defaultLineTailColor *= final;
 
-	gl_FragColor = vec4(0.0,green,blue,1.0);
+		// }else{
+    //   defaultLineTailColor = vec4(0.0);
+    // }	
+	}else{
+    defaultLineTailColor = vec4(0.0);
+  }
+
+	gl_FragColor = vec4(0.0,0.0,0.0,1.0) + defaultCircleColor + defaultLineColor + defaultLineTailColor;
 }
 
 

@@ -1,6 +1,5 @@
 //Author: asmith13
 //Free to use as you wish. Have fun
-// 参考：https://www.shadertoy.com/view/3djSDD
 
 #define green vec3(0.0,1.0,0.0)
 uniform float time;

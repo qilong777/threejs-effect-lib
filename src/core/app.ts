@@ -115,9 +115,10 @@ export default class App {
       this.controls.update() // 更新轨道控制器状态
       this.stats.update() // 更新性能监视器状态
       this.raycaster.setFromCamera(this.pointer, this.camera) // 更新光线投射状态
-      this.animationMixer.update(clock.getDelta()) // 更新动画混合器状态
+      const delta = clock.getDelta()
+      this.animationMixer.update(delta) // 更新动画混合器状态
 
-      this.callFrameRequestCallbacks(clock.getDelta())
+      this.callFrameRequestCallbacks(delta)
 
       this.renderer.render(this.scene, this.camera)
     })

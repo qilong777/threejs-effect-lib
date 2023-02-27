@@ -10,7 +10,7 @@ export abstract class BaseEffectShow {
     console.log('BaseEffectShow init')
   }
 
-  update() {
+  update(delta: number) {
     console.log('BaseEffectShow update')
   }
 
@@ -19,6 +19,6 @@ export abstract class BaseEffectShow {
   }
 
   getEffectName() {
-    return BaseEffectShow.effectName
+    return (this.constructor as any).effectName
   }
 }

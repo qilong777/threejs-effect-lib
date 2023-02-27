@@ -2,23 +2,24 @@
 import { onMounted, ref,onBeforeUnmount } from 'vue'
 import App from '../../core/App'
 import { Stage } from './Stage'
-import { SpreadRadarEffectShow, ScanRadarEffectShow } from '@/core/effectShow'
+import * as EffectShow from '@/core/effectShow'
+interface MenuItem{
+  name:string
+}
 
 let app!: App
 
 const threeContainer = ref<HTMLCanvasElement | null>(null)
 let stage!:Stage
 
-const menuList  = [
-  {
-    name: '扩散雷达',
-    type: SpreadRadarEffectShow.effectName
-  },
-  {
-    name: '扫描雷达',
-    type: ScanRadarEffectShow.effectName
-  }
-]
+const menuList:MenuItem[]  = []
+for (const key in EffectShow) {
+  const Cons = (EffectShow as any)[key]
+  menuList.push({
+    name: Cons.effectName,
+  })
+}
+
 
 onMounted(() => {
   if (threeContainer.value) {
@@ -27,7 +28,7 @@ onMounted(() => {
     
     app.camera.position.set(0, 0, 1000)
     stage = new Stage(app)
-    stage.showEffect(menuList[0].type)
+    stage.showEffect(menuList[0].name)
   }
 })
 
@@ -38,7 +39,7 @@ onBeforeUnmount(() => {
 
 
 const handleSelect = (index: string) => {
-  stage.showEffect(menuList[Number(index)].type)
+  stage.showEffect(menuList[Number(index)].name)
 }
 
 </script>
