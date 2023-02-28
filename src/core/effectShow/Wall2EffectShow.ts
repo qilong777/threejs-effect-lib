@@ -1,7 +1,7 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
 import { disposeObject } from '../common'
-import { getShaderMaterial } from '../effects/wall'
+import { getShaderMaterial } from '../effects/wall2'
 import type { IPoint } from '../interfaces/IPrimitive'
 import type { BufferGeometry, ShaderMaterial } from 'three'
 import { getWallGeometry } from '../common/geo.getter'
@@ -14,8 +14,8 @@ const points: IPoint[] = [
   { x: 0, y: 0 }
 ]
 
-export class WallEffectShow extends BaseEffectShow {
-  static effectName = '墙体效果'
+export class Wall2EffectShow extends BaseEffectShow {
+  static effectName = '墙体效果2'
   walls: THREE.Mesh<BufferGeometry, ShaderMaterial>[] = []
 
   init() {
@@ -34,16 +34,7 @@ export class WallEffectShow extends BaseEffectShow {
   }
 
   update(delta: number) {
-    // this.walls.forEach((wall) => {
-
-    // })
     this.walls[0].material.uniforms.time.value += delta
-    if (
-      this.walls[0].material.uniforms.time.value >
-      1 / this.walls[0].material.uniforms.stripeSpeed.value
-    ) {
-      this.walls[0].material.uniforms.time.value = 0.0
-    }
   }
 
   dispose() {

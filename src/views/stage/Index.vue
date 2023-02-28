@@ -24,7 +24,7 @@ for (const key in EffectShow) {
 onMounted(() => {
   if (threeContainer.value) {
     app = new App(threeContainer.value)
-    console.log(app);
+    // console.log(app);
     
     app.camera.position.set(0, 0, 1000)
     stage = new Stage(app)
