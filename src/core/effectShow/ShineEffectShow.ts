@@ -1,6 +1,6 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
-import { disposeObject } from '../common'
+import { removeObject } from '@/common/three/threeUtils'
 import { getShaderMaterial } from '../effects/shine'
 
 const shader = getShaderMaterial()
@@ -26,8 +26,7 @@ export class ShineEffectShow extends BaseEffectShow {
   update(delta: number) {}
 
   dispose() {
-    disposeObject(this.group)
-    this.app.scene.remove(this.group)
+    removeObject(this.group)
 
     // this.app.removeFrameRequestCallback(this.update)
   }

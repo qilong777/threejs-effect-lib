@@ -1,6 +1,6 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
-import { disposeObject } from '../common'
+import { removeObject } from '@/common/three/threeUtils'
 import { getShaderMaterial } from '../effects/wall2'
 import type { IPoint } from '../interfaces/IPrimitive'
 import type { BufferGeometry, ShaderMaterial } from 'three'
@@ -39,7 +39,7 @@ export class Wall2EffectShow extends BaseEffectShow {
 
   dispose() {
     this.walls.forEach((wall) => {
-      disposeObject(wall)
+      removeObject(wall)
       this.app.scene.remove(wall)
     })
     this.walls = []

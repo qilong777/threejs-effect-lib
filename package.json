@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "dat.gui": "^0.7.9",
+    "ecsy": "^0.4.2",
     "element-plus": "^2.2.32",
     "sass": "^1.58.3",
     "three": "^0.150.0",

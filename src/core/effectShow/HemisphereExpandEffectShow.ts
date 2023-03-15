@@ -1,6 +1,6 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
-import { disposeObject } from '../common'
+import { removeObject } from '@/common/three/threeUtils'
 import { getShaderMaterial } from '../effects/shine'
 
 export class HemisphereExpandEffectShow extends BaseEffectShow {
@@ -25,8 +25,7 @@ export class HemisphereExpandEffectShow extends BaseEffectShow {
   }
 
   dispose() {
-    disposeObject(this.mesh)
-    this.app.scene.remove(this.mesh)
+    removeObject(this.mesh)
 
     this.app.removeFrameRequestCallback(this.update)
   }

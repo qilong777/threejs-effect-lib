@@ -2,9 +2,12 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import Stats from 'three/examples/jsm/libs/stats.module'
-import { disposeObject } from './common'
+import { disposeObject, removeObjectChildren } from '@/common/three/threeUtils'
+import { World } from 'ecsy'
 
-export default class App {
+export const world = new World()
+
+export class App {
   root!: HTMLElement
   renderer!: THREE.WebGLRenderer
   scene!: THREE.Scene
@@ -61,6 +64,12 @@ export default class App {
    */
   initScene() {
     this.scene = new THREE.Scene()
+    this.resetScene()
+  }
+
+  resetScene() {
+    removeObjectChildren(this.scene)
+    this.scene.clear()
     this.scene.add(new THREE.AxesHelper(1000))
   }
 
@@ -77,7 +86,7 @@ export default class App {
    */
   initCamera() {
     this.camera = new THREE.PerspectiveCamera(
-      75,
+      30,
       this.root.offsetWidth / this.root.offsetHeight,
       0.1,
       1000000
@@ -119,6 +128,7 @@ export default class App {
       this.animationMixer.update(delta) // 更新动画混合器状态
 
       this.callFrameRequestCallbacks(delta)
+      world.execute(delta, clock.getElapsedTime())
 
       this.renderer.render(this.scene, this.camera)
     })

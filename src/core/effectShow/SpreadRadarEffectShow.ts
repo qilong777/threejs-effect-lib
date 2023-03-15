@@ -1,6 +1,6 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
-import { disposeObject } from '../common'
+import { removeObject } from '@/common/three/threeUtils'
 import { getSpreadRadarShaderMaterial } from '../effects/spreadRadar'
 export class SpreadRadarEffectShow extends BaseEffectShow {
   static effectName = '扩散雷达'
@@ -19,10 +19,7 @@ export class SpreadRadarEffectShow extends BaseEffectShow {
   }
 
   dispose() {
-    disposeObject(this.circle)
-    this.app.scene.remove(this.circle)
+    removeObject(this.circle)
     this.app.removeFrameRequestCallback(this.update)
   }
-
-
 }

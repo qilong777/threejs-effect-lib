@@ -1,6 +1,6 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
-import { disposeObject } from '../common'
+import { removeObject } from '@/common/three/threeUtils'
 import { getShaderMaterial } from '../effects/wall'
 import type { IPoint } from '../interfaces/IPrimitive'
 import type { BufferGeometry, ShaderMaterial } from 'three'
@@ -48,8 +48,7 @@ export class WallEffectShow extends BaseEffectShow {
 
   dispose() {
     this.walls.forEach((wall) => {
-      disposeObject(wall)
-      this.app.scene.remove(wall)
+      removeObject(wall)
     })
     this.walls = []
     this.app.removeFrameRequestCallback(this.update)

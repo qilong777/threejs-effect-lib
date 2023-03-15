@@ -1,6 +1,6 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
-import { disposeObject } from '../common'
+import { removeObject } from '@/common/three/threeUtils'
 import { getScanRadarShaderMaterial } from '../effects/scanRadar'
 export class ScanRadarEffectShow extends BaseEffectShow {
   static effectName = '扫描雷达'
@@ -18,8 +18,7 @@ export class ScanRadarEffectShow extends BaseEffectShow {
   }
 
   dispose() {
-    disposeObject(this.circle)
-    this.app.scene.remove(this.circle)
+    removeObject(this.circle)
     this.app.removeFrameRequestCallback(this.update)
   }
 }

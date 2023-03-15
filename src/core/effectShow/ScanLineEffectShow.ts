@@ -1,6 +1,6 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
-import { disposeObject } from '../common'
+import { removeObject } from '@/common/three/threeUtils'
 import { getScanLineShaderMaterial } from '../effects/scanLine'
 export class ScanLineEffectShow extends BaseEffectShow {
   static effectName = '扫描线'
@@ -20,7 +20,7 @@ export class ScanLineEffectShow extends BaseEffectShow {
   }
 
   dispose() {
-    disposeObject(this.plan)
+    removeObject(this.plan)
     this.app.scene.remove(this.plan)
     this.app.removeFrameRequestCallback(this.update)
   }

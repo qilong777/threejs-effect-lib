@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref,onBeforeUnmount } from 'vue'
-import App from '../../core/App'
+import { App, world } from '../../core/App'
 import { Stage } from './Stage'
 import * as EffectShow from '@/core/effectShow'
+import { AppComponent } from '@/core/components/AppComponent';
+import { DemoSystem } from '@/core/systems/DemoSystem'
 interface MenuItem{
   name:string
 }
@@ -20,10 +22,17 @@ for (const key in EffectShow) {
   })
 }
 
-
+// const entity = world.createEntity()
 onMounted(() => {
   if (threeContainer.value) {
     app = new App(threeContainer.value)
+
+    // world.registerComponent(AppComponent)
+    // world.registerSystem(DemoSystem)
+
+
+    // entity.addComponent(AppComponent, { app })
+
     // console.log(app);
     
     app.camera.position.set(0, 0, 1000)
@@ -34,6 +43,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   app.dispose()
+  // entity.remove()
+  // world.unregisterSystem(DemoSystem)
 })
 
 

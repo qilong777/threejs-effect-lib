@@ -1,4 +1,4 @@
-import type App from '../App'
+import type { App } from '@/core/App'
 
 export abstract class BaseEffectShow {
   app: App

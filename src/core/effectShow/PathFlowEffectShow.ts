@@ -1,6 +1,6 @@
 import { BaseEffectShow } from './BaseEffectShow'
 import * as THREE from 'three'
-import { disposeObject } from '../common'
+import { removeObject } from '@/common/three/threeUtils'
 import { getShaderMaterial } from '../effects/pathFlow'
 import type { IPoint } from '../interfaces/IPrimitive'
 import { getPathGeometry } from '../common/geo.getter'
@@ -33,8 +33,7 @@ export class PathFlowEffectShow extends BaseEffectShow {
   }
 
   dispose() {
-    disposeObject(this.path)
-    this.app.scene.remove(this.path)
+    removeObject(this.path)
     this.app.removeFrameRequestCallback(this.update)
   }
 }
