@@ -2,7 +2,7 @@
 import { onMounted, ref,onBeforeUnmount } from 'vue'
 import App from '../../core/App'
 import { Stage } from './Stage'
-import { SpreadRadarEffectShow, ScanRadarEffectShow } from '@/core/effectShow'
+import { SpreadRadarEffectShow, ScanRadarEffectShow, ShinyCircleEffectShow } from '@/core/effectShow'
 
 let app!: App
 
@@ -17,6 +17,10 @@ const menuList  = [
   {
     name: '扫描雷达',
     type: ScanRadarEffectShow.effectName
+  },
+  {
+    name: '呼吸圆',
+    type: ShinyCircleEffectShow.effectName
   }
 ]
 
